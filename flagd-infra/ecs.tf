@@ -5,7 +5,7 @@ resource "aws_ecs_cluster" "main" {
 
 # ECS 태스크 정의
 resource "aws_ecs_task_definition" "flagd" {
-  family                   = var.subdomain
+  family                   = "${var.subdomain}-task"
   network_mode            = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                     = var.ecs_cpu
@@ -22,12 +22,6 @@ resource "aws_ecs_task_definition" "flagd" {
           containerPort = var.container_port
           hostPort      = var.container_port
           protocol      = "tcp"
-        }
-      ]
-      environment = [
-        {
-          name  = "FLAGD_CONFIG"
-          value = "s3://${aws_s3_bucket.flagd_config.id}/demo.flagd.json"
         }
       ]
       logConfiguration = {
