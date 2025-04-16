@@ -1,11 +1,6 @@
-# Route53 설정
-resource "aws_route53_zone" "main" {
-  name = var.domain_name
-}
-
 # 기존 Route53 호스팅 영역 데이터 소스
 data "aws_route53_zone" "main" {
-  name = var.domain_name
+  zone_id = "Z0452425102WETBTXMZLC"  # 실제 호스팅 영역 ID (ianlog.me)
 }
 
 # A 레코드 생성 (ALB용)

@@ -12,7 +12,7 @@ env:
   ECS_SERVICE: flagd-service
   ECS_TASK_DEFINITION: flagd-task
   CONTAINER_NAME: flagd
-  S3_BUCKET: flagd-config-8tgfnppg
+  S3_BUCKET: flagd-config-2n7g8vmo
 
 jobs:
   deploy:
