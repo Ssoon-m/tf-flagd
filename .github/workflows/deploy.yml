@@ -12,7 +12,7 @@ env:
   ECS_SERVICE: flagd-service
   ECS_TASK_DEFINITION: flagd-task
   CONTAINER_NAME: flagd
-  S3_BUCKET: flagd-config
+  S3_BUCKET: flagd-config-8tgfnppg
 
 jobs:
   deploy:
@@ -67,4 +67,3 @@ jobs:
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true 
-        
