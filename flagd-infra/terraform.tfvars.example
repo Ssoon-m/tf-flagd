@@ -1,0 +1,13 @@
+aws_region         = "ap-northeast-2"
+aws_profile        = "default"
+vpc_cidr          = "10.0.0.0/16"
+subnet_cidrs      = ["10.0.1.0/24", "10.0.2.0/24"]
+domain_name       = "example.local"
+subdomain         = "example"
+ecs_cpu           = 256
+ecs_memory        = 512
+ecs_desired_count = 1
+s3_bucket_prefix  = "example-config"
+log_retention_days = 30
+container_port    = 8013
+alb_port          = 80 

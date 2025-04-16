@@ -1,0 +1,8 @@
+- providers.tf: AWS 프로바이더 설정
+- ecr.tf: ECR 리포지토리 설정
+- s3.tf: S3 버킷 및 관련 리소스 설정
+- iam.tf: IAM 역할 및 정책 설정
+- network.tf: VPC, 서브넷, 보안그룹 등 네트워크 관련 설정
+- alb.tf: Application Load Balancer 설정
+- ecs.tf: ECS 클러스터, 태스크 정의, 서비스 설정
+- route53.tf: Route53 도메인 및 레코드 설정
