@@ -19,6 +19,8 @@ resource "aws_lb_target_group" "main" {
     path                = "/healthz"
     healthy_threshold   = 2
     unhealthy_threshold = 10
+    interval            = 10
+    timeout             = 5
   }
 }
 
