@@ -7,9 +7,9 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REPOSITORY: flagd
-  ECS_CLUSTER: flagd-cluster
-  ECS_SERVICE: flagd-service
+  ECR_REPOSITORY: ssoon-flagd
+  ECS_CLUSTER: ssoon-flagd-cluster
+  ECS_SERVICE: ssoon-flagd-service
   ECS_TASK_DEFINITION: ssoon-flagd-task
   CONTAINER_NAME: flagd
   S3_BUCKET: flagd-config-2n7g8vmo
