@@ -15,6 +15,7 @@ resource "aws_lb_target_group" "main" {
   target_type = "ip"
 
   health_check {
+    port                = var.flagd_management_port
     path                = "/healthz"
     healthy_threshold   = 2
     unhealthy_threshold = 10
