@@ -22,6 +22,11 @@ resource "aws_ecs_task_definition" "flagd" {
           containerPort = var.container_port
           hostPort      = var.container_port
           protocol      = "tcp"
+        },
+        {
+          containerPort = var.flagd_management_port
+          hostPort      = var.flagd_management_port
+          protocol      = "tcp"
         }
       ]
       logConfiguration = {

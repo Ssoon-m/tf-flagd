@@ -86,9 +86,18 @@ resource "aws_security_group" "ecs" {
   description = "ECS Security Group"
   vpc_id      = aws_vpc.main.id
 
+  # 8013 포트 - 메인 서비스용
   ingress {
     from_port       = var.container_port
     to_port         = var.container_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  # 8014 포트 - 헬스체크용
+  ingress {
+    from_port       = var.flagd_management_port
+    to_port         = var.flagd_management_port
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }

@@ -70,6 +70,12 @@ variable "container_port" {
   default     = 8013
 }
 
+variable "flagd_management_port" {
+  description = "Management port for flagd (health check, metrics)"
+  type        = number
+  default     = 8014
+}
+
 variable "alb_port" {
   description = "Port for the ALB"
   type        = number
