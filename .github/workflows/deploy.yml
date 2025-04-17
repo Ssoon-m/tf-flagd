@@ -10,7 +10,7 @@ env:
   ECR_REPOSITORY: flagd
   ECS_CLUSTER: flagd-cluster
   ECS_SERVICE: flagd-service
-  ECS_TASK_DEFINITION: flagd-task
+  ECS_TASK_DEFINITION: ssoon-flagd-task
   CONTAINER_NAME: flagd
   S3_BUCKET: flagd-config-2n7g8vmo
 
