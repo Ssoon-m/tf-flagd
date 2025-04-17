@@ -11,7 +11,7 @@ env:
   ECS_CLUSTER: ssoon-flagd-cluster
   ECS_SERVICE: ssoon-flagd-service
   ECS_TASK_DEFINITION: ssoon-flagd-task
-  CONTAINER_NAME: flagd
+  CONTAINER_NAME: ssoon-flagd
   S3_BUCKET: flagd-config-2n7g8vmo
 
 jobs:
