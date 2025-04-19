@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.787.0",
     "@tailwindcss/vite": "^4.1.4",
+    "lucide-react": "^0.501.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.1.4"
