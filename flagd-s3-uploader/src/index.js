@@ -19,7 +19,7 @@ const client_s3_1 = require("@aws-sdk/client-s3");
 dotenv_1.default.config();
 const server = (0, fastify_1.default)({ logger: true });
 server.register(cors_1.default, {
-    origin: [process.env.FRONTEND_ORIGIN || 'http://localhost:5173'],
+    origin: [process.env.FRONTEND_ORIGIN || 'http://localhost:3000'],
     methods: ['POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true,

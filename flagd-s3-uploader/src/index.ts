@@ -8,7 +8,7 @@ dotenv.config()
 const server = fastify({ logger: true })
 
 server.register(cors, {
-  origin: [process.env.FRONTEND_ORIGIN || 'http://localhost:5173'],
+  origin: [process.env.FRONTEND_ORIGIN || 'http://localhost:3000'],
   methods: ['POST'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
