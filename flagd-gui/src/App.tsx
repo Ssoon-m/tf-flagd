@@ -1,14 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-
-// AWS S3 client setup (credentials via env vars)
-const s3 = new S3Client({
-  region: import.meta.env.VITE_AWS_REGION,
-  credentials: {
-    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID!,
-    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY!,
-  },
-});
 
 interface Variant {
   name: string;
@@ -26,15 +16,10 @@ export default function FlagdConfigEditor() {
     { key: '', state: 'ENABLED', defaultVariant: '', variants: [] },
   ]);
   const [status, setStatus] = useState<string>();
-  const bucket = import.meta.env.VITE_S3_BUCKET!;
 
-  useEffect(()=>{
-    fetch('http://localhost:8080/ping')
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-      });
-  },[]);
+  useEffect(() => {
+    fetchFlags().then(console.log);
+  }, []);
 
   const addFlag = () => {
     setFlags([...flags, { key: '', state: 'ENABLED', defaultVariant: '', variants: [] }]);
@@ -58,40 +43,10 @@ export default function FlagdConfigEditor() {
     setFlags(newFlags);
   };
 
-  const buildPayload = () => {
-    const obj: Record<string, any> = {};
-    flags.forEach(f => {
-      if (!f.key) return;
-      const variants: Record<string, any> = {};
-      f.variants.forEach(v => {
-        try { variants[v.name] = JSON.parse(v.value); }
-        catch { variants[v.name] = v.value; }
-      });
-      obj[f.key] = {
-        state: f.state,
-        defaultVariant: f.defaultVariant,
-        variants,
-      };
-    });
-    return { flags: obj };
-  };
-
-  const upload = async () => {
-    setStatus('Uploading...');
-    const body = JSON.stringify(buildPayload(), null, 2);
-    try {
-      await s3.send(new PutObjectCommand({
-        Bucket: bucket,
-        Key: 'demo.flagd.json',
-        Body: body,
-        ContentType: 'application/json',
-      }));
-      setStatus('✔ Upload successful');
-    } catch (e) {
-      setStatus(`✖ Upload failed: ${e}`);
-    }
-  };
-
+  const handleUploadS3 = () => {
+    uploadFlags(flags)
+  }
+  
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Flagd Config Editor</h1>
@@ -147,11 +102,62 @@ export default function FlagdConfigEditor() {
       <button onClick={addFlag} className="bg-green-500 text-white px-4 py-2 rounded">Add Flag</button>
 
       <pre className="bg-gray-100 p-2 rounded text-sm overflow-auto" style={{ maxHeight: 200 }}>
-        {JSON.stringify(buildPayload(), null, 2)}
+        {JSON.stringify(buildPayload(flags), null, 2)}
       </pre>
 
-      <button onClick={upload} className="bg-blue-600 text-white px-4 py-2 rounded">Upload to S3</button>
+      <button onClick={handleUploadS3} className="bg-blue-600 text-white px-4 py-2 rounded">Upload to S3</button>
       {status && <p className="mt-2">{status}</p>}
     </div>
   );
+}
+
+
+const buildPayload = (flags : FlagItem[]) => {
+  const obj: Record<string, any> = {};
+  flags.forEach(f => {
+    if (!f.key) return;
+    const variants: Record<string, any> = {};
+    f.variants.forEach(v => {
+      try { variants[v.name] = JSON.parse(v.value); }
+      catch { variants[v.name] = v.value; }
+    });
+    obj[f.key] = {
+      state: f.state,
+      defaultVariant: f.defaultVariant,
+      variants,
+    };
+  });
+  return { flags: obj };
+};
+
+// 플래그 조회
+export async function fetchFlags() {
+  const res = await fetch('http://localhost:8080/flagd/feature-flags', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', 
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch flags: ${res.status} ${res.statusText}`);
+  }
+  return res.json();
+}
+
+
+async function uploadFlags(flags : FlagItem[]) {
+  const payload = JSON.stringify(buildPayload(flags), null, 2);
+  const res = await fetch('http://localhost:8080/flagd/feature-flags', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ payload })
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    console.error('Upload failed:', err);
+    return;
+  }
+  console.log('Upload successful');
 }
