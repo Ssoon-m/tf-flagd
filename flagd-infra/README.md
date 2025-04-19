@@ -21,7 +21,6 @@
 - `alb.tf`: Application Load Balancer 설정
 - `route53.tf`: DNS 설정
 - `acm.tf`: SSL/TLS 인증서 설정
-- `cloudfront.tf`: CDN 설정 (정적 콘텐츠 전송용)
 
 ### 권한 관리
 - `iam.tf`: IAM 역할 및 정책 설정
@@ -32,13 +31,6 @@
 - ECS Fargate를 사용한 컨테이너 실행
 - ALB를 통한 로드 밸런싱
 - S3에서 설정 파일 로드
-- HTTPS 지원
-
-### 정적 콘텐츠 제공
-- S3와 CloudFront를 통한 정적 파일 제공
-- 글로벌 CDN을 통한 빠른 콘텐츠 전송
-- HTTPS 지원
-- 버전 관리 및 암호화 지원
 
 ## 사용 방법
 
@@ -61,4 +53,3 @@ terraform apply
 ## 주의사항
 - 실제 도메인 사용을 위해서는 Route53에서 도메인을 구매하거나 기존 도메인을 등록해야 합니다.
 - SSL 인증서는 도메인 검증이 필요합니다.
-- CloudFront 배포는 전파되는데 시간이 걸릴 수 있습니다 (보통 15-30분).
