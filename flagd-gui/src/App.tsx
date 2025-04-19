@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 // AWS S3 client setup (credentials via env vars)
@@ -27,6 +27,14 @@ export default function FlagdConfigEditor() {
   ]);
   const [status, setStatus] = useState<string>();
   const bucket = import.meta.env.VITE_S3_BUCKET!;
+
+  useEffect(()=>{
+    fetch('http://localhost:8080/ping')
+      .then(res => res.json())
+      .then(data => {
+        console.log(data);
+      });
+  },[]);
 
   const addFlag = () => {
     setFlags([...flags, { key: '', state: 'ENABLED', defaultVariant: '', variants: [] }]);
