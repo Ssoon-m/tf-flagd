@@ -12,7 +12,7 @@
     "background-color": {
       "state": "ENABLED",
       "variants": {
-        "red": "#FFFFFF",
+        "red": "#CCCCCC",
         "blue": "#0000FF",
         "green": "#00FF00",
         "yellow": "#FFFF00"
