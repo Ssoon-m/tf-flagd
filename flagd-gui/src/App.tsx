@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import { Trash2Icon, PlusIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import { produce } from 'immer';
 
 interface Variant { name: string; value: string; }
 interface FlagItem {
@@ -33,22 +34,75 @@ export default function FlagdConfigEditor() {
       .finally(() => setLoading(false));
   }, []);
 
-  const toggleState = (i: number) => {
-    const a = [...flags]; a[i].state = !a[i].state; setFlags(a);
-  };
-  const toggleExpand = (i: number) => {
-    const a = [...flags]; a[i].expanded = !a[i].expanded; setFlags(a);
-  };
-  const removeFlag = (i: number) => setFlags(flags.filter((_, idx) => idx !== i));
-  const addFlag = () => setFlags([...flags, { key: '', state: true, defaultVariant: '', variants: [], expanded: true }]);
+  const toggleState = (i: number) =>
+    setFlags(current =>
+      produce(current, draft => {
+        draft[i].state = !draft[i].state;
+      })
+    );
+  const toggleExpand = (i: number) =>
+    setFlags(current =>
+      produce(current, draft => {
+        draft[i].expanded = !draft[i].expanded;
+      })
+    );
+  const removeFlag = (i: number) =>
+    setFlags(current =>
+      produce(current, draft => {
+        draft.splice(i, 1);
+      })
+    );
+  const addFlag = () =>
+    setFlags(current =>
+      produce(current, draft => {
+        draft.push({ key: '', state: true, defaultVariant: '', variants: [], expanded: true });
+      })
+    );
 
   const handleUpload = async () => {
     try {
       await uploadFlags(flags);
       setStatus('Upload successful');
+      setTimeout(() => {
+        setStatus('');
+      }, 1000);
     } catch (e: any) {
       setStatus(`Upload failed: ${e.message}`);
     }
+  };
+
+  const handleVariantNameChange = (flagIdx: number, varIdx: number, value: string) =>
+    setFlags(current =>
+      produce(current, draft => { draft[flagIdx].variants[varIdx].name = value; })
+    );
+
+  const handleVariantValueChange = (flagIdx: number, varIdx: number, value: string) =>
+    setFlags(current =>
+      produce(current, draft => { draft[flagIdx].variants[varIdx].value = value; })
+    );
+
+  const handleRemoveVariant = (flagIdx: number, varIdx: number) =>
+    setFlags(current =>
+      produce(current, draft => { draft[flagIdx].variants.splice(varIdx, 1); })
+    );
+
+  const handleKeyChange = (flagIdx: number, value: string) =>
+    setFlags(current =>
+      produce(current, draft => { draft[flagIdx].key = value; })
+    );
+
+  const handleDefaultVariantChange = (flagIdx: number, value: string) =>
+    setFlags(current =>
+      produce(current, draft => { draft[flagIdx].defaultVariant = value; })
+    );
+
+
+  const addVariant = (i: number) => {
+    setFlags(current =>
+      produce(current, draft => {
+        draft[i].variants.push({ name: '', value: '' });
+      })
+    );
   };
 
   if (loading) return <div className="p-4">Loading...</div>;
@@ -57,7 +111,7 @@ export default function FlagdConfigEditor() {
   return (
     <div className="p-6 space-y-4">
       <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Feature Flags</h1>
+        <h1 className="text-2xl font-bold">Flagd 업로드 </h1>
         <button onClick={addFlag} className="flex items-center bg-green-600 text-white px-3 py-1 rounded">
           <PlusIcon className="mr-1" size={16}/> New Flag
         </button>
@@ -68,8 +122,8 @@ export default function FlagdConfigEditor() {
           <li key={i} className="border rounded-lg shadow-sm overflow-hidden">
             <div className="flex items-center justify-between bg-gray-100 p-4">
               <div className="flex items-center space-x-4">
+                <button onClick={() => toggleState(i)} className={`${flag.state ? 'bg-green-500' : 'bg-gray-300'} w-6 h-6 rounded-full`}> </button>
                 <span className="font-semibold truncate w-48">{flag.key || <em className="text-gray-500">[no key]</em>}</span>
-                <button onClick={() => toggleState(i)} className={`${flag.state ? 'bg-green-500' : 'bg-gray-300'} w-12 h-6 rounded-full`}> </button>
               </div>
               <div className="flex items-center space-x-2">
                 <button onClick={() => toggleExpand(i)}>
@@ -87,16 +141,12 @@ export default function FlagdConfigEditor() {
                     type="text"
                     placeholder="Flag Key"
                     value={flag.key}
-                    onChange={e => setFlags(f => {
-                      const a = [...f]; a[i].key = e.target.value; return a;
-                    })}
+                    onChange={e => handleKeyChange(i, e.target.value)}
                     className="col-span-2 border rounded p-2"
                   />
                   <select
                     value={flag.defaultVariant}
-                    onChange={e => setFlags(f => {
-                      const a = [...f]; a[i].defaultVariant = e.target.value; return a;
-                    })}
+                    onChange={e => handleDefaultVariantChange(i, e.target.value)}
                     className="border rounded p-2"
                   >
                     <option value="">-- default --</option>
@@ -108,33 +158,25 @@ export default function FlagdConfigEditor() {
                   <ul className="mt-2 space-y-2">
                     {flag.variants.map((v, vi) => (
                       <li key={vi} className="flex items-center space-x-2">
-                        <input
-                          value={v.name}
-                          placeholder="Name"
-                          onChange={e => setFlags(f => {
-                            const a = [...f]; a[i].variants[vi].name = e.target.value; return a;
-                          })}
-                          className="border rounded p-2 flex-1"
-                        />
-                        <input
-                          value={v.value}
-                          placeholder="Value"
-                          onChange={e => setFlags(f => {
-                            const a = [...f]; a[i].variants[vi].value = e.target.value; return a;
-                          })}
-                          className="border rounded p-2 flex-1"
-                        />
-                        <button onClick={() => setFlags(f => {
-                          const a = [...f]; a[i].variants.splice(vi, 1); return a;
-                        })} className="text-red-500">
-                          <Trash2Icon size={16}/>
-                        </button>
-                      </li>
+                      <input
+                        value={v.name}
+                        placeholder="Name"
+                        onChange={e => handleVariantNameChange(i, vi, e.target.value)}
+                        className="border rounded p-2 flex-1"
+                      />
+                      <input
+                        value={v.value}
+                        placeholder="Value"
+                        onChange={e => handleVariantValueChange(i, vi, e.target.value)}
+                        className="border rounded p-2 flex-1"
+                      />
+                      <button onClick={() => handleRemoveVariant(i, vi)} className="text-red-500">
+                        <Trash2Icon size={16}/>
+                      </button>
+                    </li>
                     ))}
                   </ul>
-                  <button onClick={() => setFlags(f => {
-                    const a = [...f]; a[i].variants.push({ name: '', value: '' }); return a;
-                  })}
+                  <button onClick={() => addVariant(i)}
                   className="mt-2 flex items-center text-blue-600">
                     <PlusIcon className="mr-1" size={16}/> Add Variant
                   </button>
